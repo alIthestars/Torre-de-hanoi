@@ -1,0 +1,114 @@
+// os testes unitarios foram compilados nesse arquivo para melhor organização
+
+// teste unitario - classe disco
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
+
+public class DiscoTest {
+
+    @Test
+    public void testCriacaoDisco() {
+        Disco disco = new Disco(5);
+        assertNotNull(disco);
+        assertEquals(5, disco.getTamanho());
+    }
+
+    @Test
+    public void testTamanhoNaoNulo() {
+        Disco disco = new Disco(3);
+        assertNotNull(disco.getTamanho());
+    }
+}
+
+// teste unitario - classe pilha
+
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+public class PilhaTest {
+
+    private Pilha pilha;
+
+    @BeforeEach
+    public void setup() {
+        pilha = new Pilha(3);
+    }
+
+    @Test
+    public void testPilhaInicialmenteVazia() {
+        assertTrue(pilha.isPilhaVazia());
+        assertFalse(pilha.isPilhaCheia());
+    }
+
+    @Test
+    public void testPush() {
+        pilha.push(new Disco(1));
+        assertFalse(pilha.isPilhaVazia());
+        assertEquals(1, pilha.peek().getTamanho());
+    }
+
+    @Test
+    public void testPushAteEncher() {
+        pilha.push(new Disco(1));
+        pilha.push(new Disco(2));
+        pilha.push(new Disco(3));
+        
+        assertTrue(pilha.isPilhaCheia());
+    }
+
+    @Test
+    public void testNaoAdicionaSeCheia() {
+        pilha.push(new Disco(1));
+        pilha.push(new Disco(2));
+        pilha.push(new Disco(3));
+        pilha.push(new Disco(4)); // excede
+        
+        assertEquals(3, pilha.peek().getTamanho()); // ainda deve ser o 3
+    }
+
+    @Test
+    public void testPop() {
+        pilha.push(new Disco(1));
+        pilha.push(new Disco(2));
+
+        Disco removido = pilha.pop();
+        
+        assertEquals(2, removido.getTamanho());
+        assertEquals(1, pilha.peek().getTamanho());
+    }
+
+    @Test
+    public void testPopEmPilhaVazia() {
+        assertNull(pilha.pop());
+    }
+
+    @Test
+    public void testPeekNaoRemove() {
+        pilha.push(new Disco(5));
+        pilha.push(new Disco(7));
+
+        Disco pontoTopo = pilha.peek();
+
+        assertEquals(7, pontoTopo.getTamanho());
+        assertEquals(7, pilha.peek().getTamanho()); // deve continuar lá
+    }
+
+    @Test
+    public void testGetDiscoValido() {
+        pilha.push(new Disco(1));
+        pilha.push(new Disco(2));
+
+        assertEquals(1, pilha.getDisco(0).getTamanho());
+        assertEquals(2, pilha.getDisco(1).getTamanho());
+    }
+
+    @Test
+    public void testGetDiscoInvalido() {
+        pilha.push(new Disco(1));
+
+        assertNull(pilha.getDisco(2)); // índice inválido
+    }
+}
+
+
