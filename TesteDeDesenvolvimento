@@ -1,0 +1,59 @@
+// os testes no modelo tdd foram compilçados aqui para organização
+
+// verifica se a pilha respeita o comportamento LIFO
+
+@Test
+public void testComportamentoLIFO() {
+    pilha.push(new Disco(1));
+    pilha.push(new Disco(2));
+    pilha.push(new Disco(3));
+
+    assertEquals(3, pilha.pop().getTamanho());
+    assertEquals(2, pilha.pop().getTamanho());
+    assertEquals(1, pilha.pop().getTamanho());
+}
+
+// não deve permitir inserir discos se a pilha estiver cheia
+
+@Test
+public void testPushNaoAdicionaQuandoCheia() {
+    pilha.push(new Disco(10));
+    pilha.push(new Disco(20));
+    pilha.push(new Disco(30));
+    pilha.push(new Disco(40)); // não deve ser inserido
+
+    assertTrue(pilha.isPilhaCheia());
+    assertEquals(30, pilha.peek().getTamanho());
+}
+
+// pop deve limpar posição do array (boa prática)
+
+@Test
+public void testPopLimpaPosicao() {
+    pilha.push(new Disco(10));
+    pilha.push(new Disco(20));
+    
+    Disco removido = pilha.pop();
+    
+    assertEquals(20, removido.getTamanho());
+    assertNull(pilha.getDisco(1)); // a posição deve ser esvaziada
+}
+
+// testes de integração básicos
+
+@Test
+public void testFluxoCompletoPilha() {
+    assertTrue(pilha.isPilhaVazia());
+    
+    pilha.push(new Disco(1));
+    pilha.push(new Disco(2));
+    pilha.push(new Disco(3));
+
+    assertTrue(pilha.isPilhaCheia());
+
+    assertEquals(3, pilha.pop().getTamanho());
+    assertEquals(2, pilha.pop().getTamanho());
+    assertEquals(1, pilha.pop().getTamanho());
+
+    assertTrue(pilha.isPilhaVazia());
+}
