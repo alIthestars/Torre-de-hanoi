@@ -1,0 +1,73 @@
+public class TorreDeHanoi {
+
+    private static final int MIN_DISCS = 1;
+
+    private final Pilha torreA;
+    private final Pilha torreB;
+    private final Pilha torreC;
+
+    private int movimentosRealizados = 0;
+
+    public enum TorreID { A, B, C }
+
+    public TorreDeHanoi(int numDeDiscos) {
+        if (numDeDiscos < MIN_DISCS) {
+            throw new IllegalArgumentException("A quantidade de discos deve ser no mínimo 1.");
+        }
+
+        torreA = new Pilha(numDeDiscos);
+        torreB = new Pilha(numDeDiscos);
+        torreC = new Pilha(numDeDiscos);
+
+        inicializarTorres(numDeDiscos);
+    }
+
+    private void inicializarTorres(int numDeDiscos) {
+        for (int i = numDeDiscos; i > 0; i--) {
+            torreA.push(new Disco(i));
+        }
+    }
+
+    public Pilha getTorre(TorreID idTorre) {
+        return switch (idTorre) {
+            case A -> torreA;
+            case B -> torreB;
+            case C -> torreC;
+        };
+    }
+
+    public boolean isVitoria() {
+        return torreA.isPilhaVazia() && (torreB.isPilhaVazia() || torreC.isPilhaVazia());
+    }
+
+    public Integer moverDisco(TorreID origem, TorreID destino) {
+        if (origem == destino) {
+            return null;
+        }
+
+        Pilha torreOrigem = getTorre(origem);
+        Pilha torreDestino = getTorre(destino);
+
+        if (!movimentoPermitido(torreOrigem, torreDestino)) {
+            return null;
+        }
+
+        torreDestino.push(torreOrigem.pop());
+        return ++movimentosRealizados;
+    }
+
+    private boolean movimentoPermitido(Pilha torreOrigem, Pilha torreDestino) {
+        if (torreOrigem.isPilhaVazia()) {
+            return false;
+        }
+
+        Disco discoOrigem = torreOrigem.peek();
+        Disco discoDestino = torreDestino.peek();
+
+        return (discoDestino == null) || (discoOrigem.getTamanho() < discoDestino.getTamanho());
+    }
+
+    public int getMovimentosRealizados() {
+        return movimentosRealizados;
+    }
+}
