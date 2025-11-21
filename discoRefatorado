@@ -1,0 +1,22 @@
+public final class Disco {
+
+    private final int tamanho;
+
+    public Disco(int tamanho) {
+        if (tamanho <= 0) {
+            throw new IllegalArgumentException("O tamanho do disco deve ser maior que zero.");
+        }
+        this.tamanho = tamanho;
+    }
+
+    public int getTamanho() {
+        return tamanho;
+    }
+
+    @Override
+    public String toString() {
+        return "Disco{" +
+                "tamanho=" + tamanho +
+                '}';
+    }
+}
