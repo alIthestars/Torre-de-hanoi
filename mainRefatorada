@@ -1,0 +1,9 @@
+public class Main {
+
+    public static void main(String[] args) {
+        javax.swing.SwingUtilities.invokeLater(() -> {
+            Tela janela = new Tela();
+            janela.setVisible(true);
+        });
+    }
+}
