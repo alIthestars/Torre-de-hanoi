@@ -1,0 +1,67 @@
+import java.util.Arrays;
+import java.util.Optional;
+
+public class Pilha {
+
+    private static final int EMPTY = -1;
+
+    private final Disco[] discos;
+    private final int capacidade;
+    private int topo = EMPTY;
+
+    public Pilha(int capacidade) {
+        if (capacidade <= 0) {
+            throw new IllegalArgumentException("A capacidade da pilha deve ser maior que zero.");
+        }
+        this.capacidade = capacidade;
+        this.discos = new Disco[capacidade];
+    }
+
+    public boolean push(Disco disco) {
+        if (isFull() || disco == null) {
+            return false;
+        }
+        discos[++topo] = disco;
+        return true;
+    }
+
+    public Optional<Disco> pop() {
+        if (isEmpty()) {
+            return Optional.empty();
+        }
+        Disco discoRemovido = discos[topo];
+        discos[topo--] = null;
+        return Optional.of(discoRemovido);
+    }
+
+    public Optional<Disco> peek() {
+        if (isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(discos[topo]);
+    }
+
+    public boolean isEmpty() {
+        return topo == EMPTY;
+    }
+
+    public boolean isFull() {
+        return topo == capacidade - 1;
+    }
+
+    public int getCapacidade() {
+        return capacidade;
+    }
+
+    public Optional<Disco> getDisco(int index) {
+        if (index < 0 || index > topo) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable(discos[index]);
+    }
+
+    @Override
+    public String toString() {
+        return "Pilha: " + Arrays.toString(discos);
+    }
+}
