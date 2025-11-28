@@ -1,43 +1,45 @@
-public class TorreDeHanoi {
+public class TorreDeHanoiRefatorada {
 
     private static final int MIN_DISCS = 1;
 
-    private final Pilha torreA;
-    private final Pilha torreB;
-    private final Pilha torreC;
+    private final pilhaRefatorada torreA;
+    private final pilhaRefatorada torreB;
+    private final pilhaRefatorada torreC;
 
     private int movimentosRealizados = 0;
 
     public enum TorreID { A, B, C }
 
-    public TorreDeHanoi(int numDeDiscos) {
+    public TorreDeHanoiRefatorada(int numDeDiscos) {
         if (numDeDiscos < MIN_DISCS) {
             throw new IllegalArgumentException("A quantidade de discos deve ser no mínimo 1.");
         }
 
-        torreA = new Pilha(numDeDiscos);
-        torreB = new Pilha(numDeDiscos);
-        torreC = new Pilha(numDeDiscos);
+        torreA = new pilhaRefatorada(numDeDiscos);
+        torreB = new pilhaRefatorada(numDeDiscos);
+        torreC = new pilhaRefatorada(numDeDiscos);
 
         inicializarTorres(numDeDiscos);
     }
 
     private void inicializarTorres(int numDeDiscos) {
         for (int i = numDeDiscos; i > 0; i--) {
-            torreA.push(new Disco(i));
+            torreA.push(new discoRefatorado(i));
         }
     }
 
-    public Pilha getTorre(TorreID idTorre) {
-        return switch (idTorre) {
-            case A -> torreA;
-            case B -> torreB;
-            case C -> torreC;
-        };
+    public pilhaRefatorada getTorre(TorreID idTorre) {
+        switch (idTorre) {
+            case A: return torreA;
+            case B: return torreB;
+            case C: return torreC;
+        }
+        return null;
     }
 
     public boolean isVitoria() {
-        return torreA.isPilhaVazia() && (torreB.isPilhaVazia() || torreC.isPilhaVazia());
+        return torreA.isEmpty() &&
+                (torreB.isEmpty() || torreC.isEmpty());
     }
 
     public Integer moverDisco(TorreID origem, TorreID destino) {
@@ -45,26 +47,31 @@ public class TorreDeHanoi {
             return null;
         }
 
-        Pilha torreOrigem = getTorre(origem);
-        Pilha torreDestino = getTorre(destino);
+        pilhaRefatorada torreOrigem = getTorre(origem);
+        pilhaRefatorada torreDestino = getTorre(destino);
 
         if (!movimentoPermitido(torreOrigem, torreDestino)) {
             return null;
         }
 
-        torreDestino.push(torreOrigem.pop());
-        return ++movimentosRealizados;
+        discoRefatorado discoMovido = torreOrigem.pop();
+        torreDestino.push(discoMovido);
+
+        movimentosRealizados++;
+        return movimentosRealizados;
     }
 
-    private boolean movimentoPermitido(Pilha torreOrigem, Pilha torreDestino) {
-        if (torreOrigem.isPilhaVazia()) {
+    private boolean movimentoPermitido(pilhaRefatorada torreOrigem, pilhaRefatorada torreDestino) {
+
+        if (torreOrigem.isEmpty()) {
             return false;
         }
 
-        Disco discoOrigem = torreOrigem.peek();
-        Disco discoDestino = torreDestino.peek();
+        discoRefatorado discoOrigem = torreOrigem.peek();
+        discoRefatorado discoDestino = torreDestino.peek();
 
-        return (discoDestino == null) || (discoOrigem.getTamanho() < discoDestino.getTamanho());
+        return discoDestino == null ||
+                discoOrigem.getTamanho() < discoDestino.getTamanho();
     }
 
     public int getMovimentosRealizados() {
