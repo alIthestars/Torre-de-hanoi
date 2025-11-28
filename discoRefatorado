@@ -1,8 +1,8 @@
-public final class Disco {
+public final class discoRefatorado {
 
     private final int tamanho;
 
-    public Disco(int tamanho) {
+    public discoRefatorado(int tamanho) {
         if (tamanho <= 0) {
             throw new IllegalArgumentException("O tamanho do disco deve ser maior que zero.");
         }
