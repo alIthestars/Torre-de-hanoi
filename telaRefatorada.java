@@ -1,16 +1,19 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class Tela extends JFrame {
+public class telaRefatorada extends JFrame {
 
-    private static final String WIN_MESSAGE = "<html><b><font color='green'>Parabéns! Você ganhou 🎉</font></b></html>";
-    private static final String ERROR_MESSAGE = "<html><b><font color='red'>Opa! Movimento não permitido :(</font></b></html>";
+    private static final String WIN_MESSAGE =
+            "<html><b><font color='green'>Parabéns! Você ganhou!</font></b></html>";
+    private static final String ERROR_MESSAGE =
+            "<html><b><font color='red'>Opa! Movimento não permitido :(</font></b></html>";
 
     private JTextField inputDiscosField;
     private JComboBox<String> origemBox;
     private JComboBox<String> destinoBox;
-    private TorreDeHanoi torreDeHanoi;
+    private TorreDeHanoiRefatorada torreDeHanoi;
     private JPanel torresPanel;
     private JLabel contadorLabel;
     private JLabel mensagemLabel;
@@ -18,7 +21,7 @@ public class Tela extends JFrame {
     private int contadorMovimentos = 0;
     private int movimentosIdeais = 0;
 
-    public Tela() {
+    public telaRefatorada() {
         super("Sinfonia dos Aneis");
         configurarJanela();
         inicializarComponentes();
@@ -28,32 +31,38 @@ public class Tela extends JFrame {
         setSize(850, 600);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLayout(null); // Mantido para preservar seu layout original visual
+        setLayout(null);
     }
 
     private void inicializarComponentes() {
         adicionarTitulo();
         adicionarEntradaDiscos();
         adicionarSeletoresDeMovimento();
-        adicionarBotaoIniciar();
         adicionarBotaoMover();
         inicializarLabelsAuxiliares();
     }
 
     private void adicionarTitulo() {
-        JLabel titulo = criarLabel("A Sinfonia dos Aneis - Torre de Hanoi", 20, 0, 800, 50, new Font("Arial", Font.BOLD, 36));
+        JLabel titulo = criarLabel("A Sinfonia dos Aneis - Torre de Hanoi",
+                20, 0, 800, 50, new Font("Arial", Font.BOLD, 36));
         add(titulo);
     }
 
     private void adicionarEntradaDiscos() {
-        JLabel inputLabel = criarLabel("Insira a quantidade de discos:", 20, 100, 250, 25);
+        JLabel inputLabel = criarLabel("Insira a quantidade de discos:",
+                20, 100, 250, 25);
         inputDiscosField = new JTextField();
         inputDiscosField.setBounds(20, 130, 150, 25);
         add(inputLabel);
         add(inputDiscosField);
 
         JButton iniciarButton = criarBotao("Iniciar", 20, 165, 100, 30, Color.GREEN);
-        iniciarButton.addActionListener(e -> iniciarJogo());
+        iniciarButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                iniciarJogo();
+            }
+        });
         add(iniciarButton);
     }
 
@@ -62,19 +71,21 @@ public class Tela extends JFrame {
         destinoBox = criarComboBox("Escolha a haste de destino:", 20, 260);
     }
 
-    private void adicionarBotaoIniciar() {
-        // Já incluído dentro de adicionarEntradaDiscos()
-    }
-
     private void adicionarBotaoMover() {
-        JButton moverButton = criarBotao("Mover disco", 20, 310, 150, 30, Color.PINK);
-        moverButton.addActionListener(e -> moverDisco());
+        JButton moverButton = criarBotao("Mover disco",
+                20, 310, 150, 30, Color.PINK);
+        moverButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                moverDisco();
+            }
+        });
         add(moverButton);
     }
 
     private void inicializarLabelsAuxiliares() {
-        contadorLabel = criarLabel("", 20, 350, 400, 25);
-        mensagemLabel = criarLabel("", 20, 380, 400, 25);
+        contadorLabel = criarLabel("", 20, 350, 400, 50);
+        mensagemLabel = criarLabel("", 20, 450, 400, 50);
         mensagemLabel.setVisible(false);
 
         add(contadorLabel);
@@ -84,7 +95,7 @@ public class Tela extends JFrame {
     private void iniciarJogo() {
         try {
             int numDeDiscos = Integer.parseInt(inputDiscosField.getText());
-            torreDeHanoi = new TorreDeHanoi(numDeDiscos);
+            torreDeHanoi = new TorreDeHanoiRefatorada(numDeDiscos);
             movimentosIdeais = (int) Math.pow(2, numDeDiscos) - 1;
 
             configurarTorresPanel();
@@ -123,9 +134,10 @@ public class Tela extends JFrame {
         nameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         panel.add(nameLabel);
 
-        Pilha torre = torreDeHanoi.getTorre(nomeHaste);
+        pilhaRefatorada torre = torreDeHanoi.getTorre(TorreDeHanoiRefatorada.TorreID.valueOf(String.valueOf(nomeHaste)));
+
         for (int i = torre.getTamanhoMaximo() - 1; i >= 0; i--) {
-            Disco disco = torre.getDisco(i);
+            discoRefatorado disco = torre.getDisco(i);
             if (disco != null) {
                 JLabel discoLabel = new JLabel("[" + disco.getTamanho() + "]");
                 discoLabel.setFont(new Font("Arial", Font.BOLD, 24));
@@ -140,7 +152,14 @@ public class Tela extends JFrame {
         char origem = origemBox.getSelectedItem().toString().charAt(0);
         char destino = destinoBox.getSelectedItem().toString().charAt(0);
 
-        Integer movimento = torreDeHanoi.moverDisco(origem, destino);
+        TorreDeHanoiRefatorada.TorreID o =
+                TorreDeHanoiRefatorada.TorreID.valueOf(String.valueOf(origem));
+
+        TorreDeHanoiRefatorada.TorreID d =
+                TorreDeHanoiRefatorada.TorreID.valueOf(String.valueOf(destino));
+
+        Integer movimento = torreDeHanoi.moverDisco(o, d);
+
         if (movimento != null) {
             contadorMovimentos = movimento;
             atualizarContador();
@@ -157,7 +176,8 @@ public class Tela extends JFrame {
     }
 
     private void atualizarContador() {
-        contadorLabel.setText("Movimentos: " + contadorMovimentos + " / Movimentos ideais: " + movimentosIdeais);
+        contadorLabel.setText("Movimentos: " + contadorMovimentos +
+                " / Movimentos ideais: " + movimentosIdeais);
     }
 
     private void exibirMensagem(String mensagem) {
@@ -165,16 +185,17 @@ public class Tela extends JFrame {
         mensagemLabel.setVisible(true);
     }
 
-    private void exibirMensagemTemporal(String mensagem) {
+    private void exibirMensagemTemporal(final String mensagem) {
         exibirMensagem(mensagem);
 
-        Timer timer = new Timer(2000, e -> mensagemLabel.setVisible(false));
+        Timer timer = new Timer(2000, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                mensagemLabel.setVisible(false);
+            }
+        });
         timer.setRepeats(false);
         timer.start();
-    }
-
-    private JLabel criarLabel(String texto, int x, int y, int largura, int altura) {
-        return criarLabel(texto, x, y, largura, altura, new Font("Arial", Font.PLAIN, 18));
     }
 
     private JLabel criarLabel(String texto, int x, int y, int largura, int altura, Font fonte) {
@@ -182,6 +203,10 @@ public class Tela extends JFrame {
         label.setBounds(x, y, largura, altura);
         label.setFont(fonte);
         return label;
+    }
+
+    private JLabel criarLabel(String texto, int x, int y, int largura, int altura) {
+        return criarLabel(texto, x, y, largura, altura, new Font("Arial", Font.PLAIN, 18));
     }
 
     private JButton criarBotao(String texto, int x, int y, int largura, int altura, Color cor) {
@@ -192,8 +217,8 @@ public class Tela extends JFrame {
     }
 
     private JComboBox<String> criarComboBox(String texto, int x, int y) {
-        JLabel label = criarLabel(texto, x, y, 200, 25);
-        JComboBox<String> comboBox = new JComboBox<>(new String[]{"A", "B", "C"});
+        JLabel label = criarLabel(texto, x, y, 250, 25);
+        JComboBox<String> comboBox = new JComboBox(new String[]{"A", "B", "C"});
         comboBox.setBounds(x, y + 25, 50, 25);
         add(label);
         add(comboBox);
@@ -201,6 +226,11 @@ public class Tela extends JFrame {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new Tela().setVisible(true));
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                new telaRefatorada().setVisible(true);
+            }
+        });
     }
 }
